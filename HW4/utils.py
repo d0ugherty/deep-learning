@@ -25,6 +25,7 @@ class DatasetUtils:
         else:
             transform = transforms.Compose([
                 transforms.ToTensor(),
+                transforms.Resize((224,224)),
                 transforms.Resize(256),
                 transforms.CenterCrop(224),
                 transforms.Normalize(mean=mean, std=std)
@@ -65,34 +66,38 @@ class DatasetUtils:
         std = torch.sqrt(std / (self.N * images.size(2)))
         return std
     
+    def get_stats(self, loader):
+        """
+        Return mean and standard deviation values
+        """
+        mean = DatasetUtils(loader).calculate_mean()
+        std = DatasetUtils.calculate_std(self,mean)
+        return mean, std
+
 
     @staticmethod
     def create_loader_and_transform(root_path, loader_func, extensions,
-                                     batch_size=32,shuffle=True,is_test=True):
+                                     batch_size,shuffle=True,is_test=False):
         
-        # Step 1: Create initial DataLoader with ToTensor() transform for the entire dataset
+        
         initial_dataset = DatasetFolder(root=root_path, loader=loader_func,
                                         extensions=extensions, transform=transforms.ToTensor())
         
         initial_loader = DataLoader(initial_dataset, batch_size=batch_size, shuffle=shuffle)
     
         if(is_test):
-            return DatasetUtils.create_test_loader(initial_dataset, initial_loader)
+            return DatasetUtils.create_test_loader(initial_loader, root_path, loader_func, 
+                                                   extensions, batch_size,shuffle=False)
         else:    
-            # Step 2: Randomly split the dataset into training and validation sets
+            
             train_set, val_set = random_split(initial_dataset, [1200, 600])
             
-            # Step 3: Create DataLoaders for training and validation sets
             
             train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=shuffle)
-            val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=shuffle)  # Usually, we don't shuffle the validation set
+            val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)  
+            stats_calc = DatasetUtils(initial_loader)
+            mean, std = stats_calc.get_stats(initial_loader)
 
-            # Step 4: Calculate statistics for the training set
-            stats_calc = DatasetUtils(train_loader)
-            mean = stats_calc.calculate_mean()
-            std = stats_calc.calculate_std(mean)
-
-            # Step 5: Create DataLoaders with full transform pipeline for both training and validation sets
             final_transform = DatasetUtils._create_transforms(is_test, mean, std)
             train_set.dataset.transform = final_transform
             val_set.dataset.transform = final_transform
@@ -100,22 +105,22 @@ class DatasetUtils:
             train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=shuffle)
             val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
             
-            return train_loader, val_loader, mean, std
+            return train_loader, val_loader, train_set, val_set
         
     
     @staticmethod
-    def create_test_loader_and_transform(init_dset, initial_loader):
+    def create_test_loader(initial_loader,root_path, loader_func, 
+                           extensions, batch_size,shuffle=False):
 
         stats_calc = DatasetUtils(initial_loader)
-        mean = stats_calc.calculate_mean()
-        std = stats_calc.calculate_std(mean)
+        mean, std = stats_calc.get_stats(initial_loader)
 
-        final_transform = DatasetUtils.create_transforms(True, mean, std)
+        final_transform = DatasetUtils._create_transforms(True, mean, std)
         
-        final_dataset = DatasetFolder(root=init_dset.root_path, loader=init_dset.loader_func,
-                                        extensions=init_dset.extensions, transform=final_transform)
+        final_dataset = DatasetFolder(root=root_path, loader=loader_func,
+                                        extensions=extensions, transform=final_transform)
         
-        final_loader = DataLoader(final_dataset, batch_size=init_dset.batch_size, shuffle=False)
+        final_loader = DataLoader(final_dataset, batch_size=batch_size, shuffle=shuffle)
 
-        return final_loader, mean, std
+        return final_loader
    
