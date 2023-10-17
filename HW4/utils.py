@@ -93,8 +93,11 @@ class DatasetUtils:
             train_set, val_set = random_split(initial_dataset, [1200, 600])
             
             
-            train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=shuffle)
-            val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)  
+            train_loader = DataLoader(train_set, batch_size=batch_size, 
+                                    shuffle=shuffle)
+            val_loader = DataLoader(val_set, batch_size=batch_size, 
+                                    shuffle=False)  
+            
             stats_calc = DatasetUtils(initial_loader)
             mean, std = stats_calc.get_stats(initial_loader)
 
