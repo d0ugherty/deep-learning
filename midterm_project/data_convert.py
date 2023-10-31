@@ -20,9 +20,14 @@ file_list = os.listdir(dir_path)
 
 for file in file_list:
     if file.endswith('.gdf'):
-        raw_data = mne.io.read_raw_gdf
+        full_path = os.path.join(dir_path, file)  # Create the full path to the file
+        print("File name: " + file)
+        
+        raw_gdf = mne.io.read_raw_gdf(full_path)  # Use the full path here
+        # df = raw_gdf.to_data_frame()
+        
         print(file)
-        print(type(raw_data))
+        # print(raw_gdf)
 """
     Convert file data 
 """
