@@ -1,32 +1,32 @@
+#!/usr/bin/env python3
 import argparse
 import os
-import numpy as np
-import pandas as pd
-import mne
-
-#sample_data_folder = mne.datasets.sample.data_path()
-#sample_data_raw_file = os.path.join(
- #   sample_data_folder, "MEG", "sample", "sample_audvis_raw.fif"
-#)
 
 def read_gdf_header(file_path):
     with open(file_path, 'rb') as f:
-     # Step 2: Read and Parse Header
-    # Read the version information (first 8 bytes in the header)
-        version_info = f.read(8).decode('utf-8').strip()
+        version_info = f.read(8).decode('ascii').strip()
         print(f"Version: {version_info}")
-"""
-    Convert file data 
-"""
+        patient_id = f.read(80).decode('ascii').strip()
+        print(f"Patient ID: {patient_id}")
+        recording_id = f.read(80).decode('ISO-8859-1', errors='replace').strip()
+        print(f"Recording ID: {recording_id}")
+        start_date = f.read(16).decode('ascii', errors= "ignore").strip()
+        print(f"Start Date: {start_date}")
 
 
-"""
-    Save converted file data
-"""
-"""
-    Read file into python
-    Takes a directory as a command line argument and iterates over 
-    each .gdf file to convert it into a python-readable format
-"""
+if __name__ == "__main__":
+    
+    parser = argparse.ArgumentParser(description='Convert MATLAB .gdf files in a directory to a Python-readable format.')
+    parser.add_argument('dir_path', type=str, help='The path of the directory containing .gdf or .mat files to convert.')
 
-read_gdf_header("data/a/A01E.gdf")
+    args = parser.parse_args()
+    dir_path = args.dir_path
+    
+    #file_list = os.listdir(dir_path)
+
+    # Loop Through Files
+    #for file in file_list:
+     #   if file.endswith('.gdf'):
+      #      full_path = os.path.join(dir_path, file)
+    read_gdf_header(dir_path)  
+            
