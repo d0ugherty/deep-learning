@@ -4,39 +4,17 @@ import numpy as np
 import pandas as pd
 import mne
 
-"""
-    Read file into python
-    Takes a directory as a command line argument and iterates over 
-    each .gdf file to convert it into a python-readable format
-"""
-parser = argparse.ArgumentParser(description='Convert MATLAB .gdf files in a directory to a Python-readable format.')
-parser.add_argument('dir_path', type=str, help='The path of the directory containing .gdf or .mat files to convert.')
-
-args = parser.parse_args()
-dir_path = args.dir_path
-
-file_list = os.listdir(dir_path)
-sample_data_folder = mne.datasets.sample.data_path()
+#sample_data_folder = mne.datasets.sample.data_path()
 #sample_data_raw_file = os.path.join(
  #   sample_data_folder, "MEG", "sample", "sample_audvis_raw.fif"
 #)
-raw = mne.io.read_raw_gdf('data/a/A01E.gdf')
-print(raw)
-"""
-for file in file_list:
-    if file.endswith('.gdf'):
-        try:
-            full_path = os.path.join(dir_path, file)  # Create the full path to the file
-            print("File name: " + file)
-            
-            raw_gdf = mne.io.read_raw_gdf(full_path)  # Use the full path here
-            # df = raw_gdf.to_data_frame()
-            
-            print(file)
-        except np.core._exceptions._UFuncOutputCastingError as e:
-            print("Casting error occurred:", e)
-        # print(raw_gdf)
-        """
+
+def read_gdf_header(file_path):
+    with open(file_path, 'rb') as f:
+     # Step 2: Read and Parse Header
+    # Read the version information (first 8 bytes in the header)
+        version_info = f.read(8).decode('utf-8').strip()
+        print(f"Version: {version_info}")
 """
     Convert file data 
 """
@@ -45,3 +23,10 @@ for file in file_list:
 """
     Save converted file data
 """
+"""
+    Read file into python
+    Takes a directory as a command line argument and iterates over 
+    each .gdf file to convert it into a python-readable format
+"""
+
+read_gdf_header("data/a/A01E.gdf")
