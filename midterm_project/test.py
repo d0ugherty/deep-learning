@@ -1,14 +1,29 @@
-import mne
-from scipy.io import savemat
+# Required Libraries
+import numpy as np
+import pyedflib  # Assuming EDF (European Data Format) is used, similar to the Biosig library in MATLAB
 
-# Read the .gdf file
-raw = mne.io.read_raw_edf('A01E.edf',preload=False, stim_channel=None)
+# Define the getData function
+def getData(subject_index=6):
+    
+    # Build path to the data file
+    dir_1 = f"A01E.gdf"  # Replace with your actual path
+    
+    # Load the data
+    try:
+        f = pyedflib.EdfReader(dir_1)
+        n = f.signals_in_file
+        signal_labels = f.getSignalLabels()
+        sigbufs = np.zeros((n, f.getNSamples()[0]))
+        for i in np.arange(n):
+            sigbufs[i, :] = f.readSignal(i)
+        f._close()
+    except:
+        print("An error occurred while reading the data.")
+    
+    # Other operations (e.g., data cleaning, transformation, etc.)
+    # ...
+    
+    return sigbufs, signal_labels
 
-# Extract the data and times
-data, times = raw[:, :]
-
-# Create a dictionary to store the data and times
-data_dict = {'data': data, 'times': times}
-
-# Save as a .mat file
-savemat('your_file.mat', data_dict)
+# Example usage
+data, labels = getData()

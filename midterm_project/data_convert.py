@@ -20,7 +20,7 @@ sample_data_folder = mne.datasets.sample.data_path()
 #sample_data_raw_file = os.path.join(
  #   sample_data_folder, "MEG", "sample", "sample_audvis_raw.fif"
 #)
-raw = mne.io.read_raw_gdf('data/dataset_2/A01E.gdf')
+raw = mne.io.read_raw_gdf('data/a/A01E.gdf')
 print(raw)
 """
 for file in file_list:
