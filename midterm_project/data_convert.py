@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
 import argparse
 import os
 import numpy as np
 import pandas as pd
 import mne
+
 """
     Read file into python
     Takes a directory as a command line argument and iterates over 
@@ -15,16 +17,30 @@ args = parser.parse_args()
 dir_path = args.dir_path
 
 file_list = os.listdir(dir_path)
-
+sample_data_folder = mne.datasets.sample.data_path()
+#sample_data_raw_file = os.path.join(
+ #   sample_data_folder, "MEG", "sample", "sample_audvis_raw.fif"
+#)
+raw = mne.io.read_raw_gdf('data/dataset_2/A01E.gdf')
+print(raw)
+"""
 for file in file_list:
     if file.endswith('.gdf'):
-        full_path = os.path.join(dir_path, file)  # Create the full path to the file
-        print("File name: " + file)
+        try:
+            full_path = os.path.join(dir_path, file)  # Create the full path to the file
+            print("File name: " + file)
             
-        raw_gdf = mne.io.read_raw_gdf(full_path)  # Use the full path here
-        df = raw_gdf.to_data_frame()
-        file_name = file.replace('.gdf', '.csv')
-        df.to_csv(f'csv/{file_name}', sep=',', encoding='utf-8')
+            raw_gdf = mne.io.read_raw_gdf(full_path)  # Use the full path here
+            # df = raw_gdf.to_data_frame()
+            
+            print(file)
+        except np.core._exceptions._UFuncOutputCastingError as e:
+            print("Casting error occurred:", e)
+        # print(raw_gdf)
+        """
+"""
+    Convert file data 
+"""
 
 
 """
