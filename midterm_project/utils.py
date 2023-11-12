@@ -22,7 +22,7 @@ def csv_to_df(file_path):
     csv_files = glob.glob(file_path)
     print("Creating dataframe...")
     for file in csv_files:
-        df = pd.read_csv(file)
+        df = pd.read_csv(file, index_col=False, dtype=float)
         giga_df = pd.concat([giga_df, df], ignore_index=True)
     
     return giga_df
@@ -30,4 +30,5 @@ def csv_to_df(file_path):
 def format_df(df):
     print("Formatting dataframe...")
     df = df.drop(df.columns[0], axis=1)
+    df = pd.DataFrame(df.values)
     return df
