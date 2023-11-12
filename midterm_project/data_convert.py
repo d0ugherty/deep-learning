@@ -25,3 +25,4 @@ for file in file_list:
         df = raw_gdf.to_data_frame()
         file_name = file.replace('.gdf', '.csv')
         df.to_csv(f'csv/{file_name}', sep=',', encoding='utf-8')
+
