@@ -2,6 +2,9 @@ import mne
 import os
 import glob
 import pandas as pd
+import numpy as np
+import scipy.signal as signal
+
 
 def gdf_to_df(file_path):
     raw_gdf = mne.io.read_raw_gdf(file_path)  # Use the full path here
@@ -32,3 +35,16 @@ def format_df(df):
     df = df.drop(df.columns[0], axis=1)
     df = pd.DataFrame(df.values)
     return df
+
+def hp_filter(dataframe,sampling_rate, cutoff):
+    length = len(dataframe)
+    
+    array = dataframe.values
+    # nyquist frequency = sampling / 2
+    nyq = 0.5 * sampling_rate
+    # butterworth filter requires normalized values
+    normalized_cutoff = cutoff / nyq
+    b, a = signal.butter(1, normalized_cutoff, btype='high', analog=False)
+
+    for i in range(length):
+        array[i] = signal.filtfilt(b, a, array[i], axis=0)
