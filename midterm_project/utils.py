@@ -37,7 +37,7 @@ def format_df(df):
     return df
 
 def band_pass_filter(data_arr,sampling_rate, cutoff,band_type):
-    print("Applying " + band_type + " filter...")
+    print("Applying " + band_type + " pass filter...")
     length = len(data_arr)
     # nyquist frequency = sampling / 2
     nyq = 0.5 * sampling_rate
@@ -47,4 +47,5 @@ def band_pass_filter(data_arr,sampling_rate, cutoff,band_type):
     result_arr = np.empty_like(data_arr)
     for i in range(length):
         result_arr[i] = signal.filtfilt(b, a, data_arr[i], axis=0)
+    print(band_type + " pass filter applied.")
     return result_arr
