@@ -49,3 +49,8 @@ def band_pass_filter(data_arr,sampling_rate, cutoff,band_type):
         result_arr[i] = signal.filtfilt(b, a, data_arr[i], axis=0)
     print(band_type + " pass filter applied.")
     return result_arr
+
+def pad_arrays(array):
+    max_length = max(data.shape[1] for data in array)
+    array = [np.pad(data, ((0, 0), (0, max_length - data.shape[1])), mode='constant') for data in array]
+    return np.array(array)
