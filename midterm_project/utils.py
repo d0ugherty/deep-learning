@@ -36,15 +36,15 @@ def format_df(df):
     df = pd.DataFrame(df.values)
     return df
 
-def hp_filter(dataframe,sampling_rate, cutoff):
-    length = len(dataframe)
-    
-    array = dataframe.values
+def band_pass_filter(data_arr,sampling_rate, cutoff,band_type):
+    print("Applying " + band_type + " filter...")
+    length = len(data_arr)
     # nyquist frequency = sampling / 2
     nyq = 0.5 * sampling_rate
     # butterworth filter requires normalized values
     normalized_cutoff = cutoff / nyq
-    b, a = signal.butter(1, normalized_cutoff, btype='high', analog=False)
-
+    b, a = signal.butter(1, normalized_cutoff, btype=band_type, analog=False)
+    result_arr = np.empty_like(data_arr)
     for i in range(length):
-        array[i] = signal.filtfilt(b, a, array[i], axis=0)
+        result_arr[i] = signal.filtfilt(b, a, data_arr[i], axis=0)
+    return result_arr
